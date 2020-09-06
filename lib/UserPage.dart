@@ -3,7 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'History.dart';
+
 
 
 class UserPage extends StatefulWidget {
@@ -16,7 +20,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  List<String> names = [];
+  List<String> names = ["akhil", "allarjun", "john", "mahesh", "nani", "ntr", "pawankalyan", "rajinikanth", "ravi", "sudheer"];
   String name;
   int credit = 0;
   int userCredits;
@@ -33,9 +37,7 @@ class _UserPageState extends State<UserPage> {
   }
 
   void variables(){
-    for(String person in widget.people){
-      names.add(person);
-    }
+
     names.remove(widget.name);
     name = names[0];
     userCredits = widget.credit;
@@ -176,7 +178,7 @@ class _UserPageState extends State<UserPage> {
           Center(
             child: GestureDetector(
               onTap: () async{
-                if(widget.credit !=0 && widget.credit-credit>0){
+                if(credit !=0 &&credit<=widget.credit){
                   textEditingController.clear();
                   DocumentSnapshot snapshot = await firestore.collection('users').document(name).get();
                   setState(() {
@@ -187,6 +189,8 @@ class _UserPageState extends State<UserPage> {
                     print(otherCredit);
                   }
                   otherCredit = otherCredit + credit;
+                  print(widget.name);
+                  print(name);
                   firestore.collection('users').document(widget.name).updateData({
                     'credits': userCredits
                   });
@@ -199,7 +203,27 @@ class _UserPageState extends State<UserPage> {
                     'credits': credit,
                     'timestamp': DateTime.now(),
                   });
+                  Fluttertoast.showToast(
+                      msg: "Transaction Successful!!",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.white,
+                      textColor: Colors.green,
+                      fontSize: 16.0
+                  );
                   customDialog(context);
+                }
+                else {
+                  Fluttertoast.showToast(
+                      msg: "please enter valid credits for Transaction",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.white,
+                      textColor: Colors.red,
+                      fontSize: 16.0
+                  );
                 }
               },
               child: Container(
@@ -268,7 +292,12 @@ customDialog(BuildContext context) {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height*0.02,),
                 GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>History()));
 
+                      },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                     width: MediaQuery.of(context).size.width*0.5,
